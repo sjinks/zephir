@@ -4,7 +4,7 @@ PREFIX=$(readlink -enq "$(dirname $0)/../../")
 
 if [ "$CC" = "gcc" -o "$CC" = "ccache gcc" -o "x$CC" = "x" ]; then
 	GCOV=gcov
-	ARGS="-s \"$PREFIX\" -ablp"
+	ARGS="-ablp"
 else
 	GCOV=llvm-cov
 	ARGS="gcov -a -b -l -p"
