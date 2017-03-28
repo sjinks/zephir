@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 
 PREFIX=$(readlink -enq "$(dirname $0)/../../")
 
@@ -21,4 +21,4 @@ done
 
 mv "$PREFIX"/*.gcov "$PREFIX/.gcov"
 
-/bin/bash <(curl -s https://codecov.io/bash) -f "$PREFIX/.gcov/*.gcov" -X gcov
+echo /bin/bash <(curl -s https://codecov.io/bash) -f "$PREFIX/.gcov/*.gcov" -X gcov
