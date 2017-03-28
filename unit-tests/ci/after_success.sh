@@ -1,4 +1,4 @@
-#!/bin/bash -x
+#!/bin/bash
 
 PREFIX=$(readlink -enq "$(dirname $0)/../../")
 
@@ -17,6 +17,5 @@ if [ "$CC" = "gcc" -o "$CC" = "ccache gcc" -o "x$CC" = "x" ]; then
 
 	mv "$PREFIX"/*.gcov "$PREFIX/.gcov"
 
-	echo /bin/bash <(curl -s https://codecov.io/bash) -f "$PREFIX/.gcov/*.gcov" -X gcov
+	/bin/bash <(curl -s https://codecov.io/bash) -f "$PREFIX/.gcov/*.gcov" -X gcov
 fi
-
