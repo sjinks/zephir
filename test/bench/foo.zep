@@ -138,6 +138,28 @@ class Foo
 		}
 	}
 
+	public function fastcall(var n)
+	{
+		var i;
+		var fci = fcall_init([this, "g"]);
+		for i in range(1, n) {
+			fcall_call(fci, null);
+		}
+
+		fcall_done(fci);
+	}
+
+	public function slowfastcall(var n)
+	{
+		var i;
+		var fci;
+		for i in range(1, n) {
+			let fci = fcall_init([this, "g"]);
+			fcall_call(fci, null);
+			fcall_done(fci);
+		}
+	}
+
 	static public function staticMethod() -> void
 	{
 	}
@@ -156,6 +178,17 @@ class Foo
 		}
 	}
 
+	public function fastscall(var n)
+	{
+		var i;
+		var fci = fcall_init(["self", "staticMethod"]);
+		for i in range(1, n) {
+			fcall_call(fci, null);
+		}
+
+		fcall_done(fci);
+	}
+
 	public function scallWithReturnTrue(var n)
 	{
 		var i;
@@ -163,6 +196,17 @@ class Foo
 		for i in range(1, n) {
 			self::staticMethod1();
 		}
+	}
+
+	public function fastscallWithReturnTrue(var n)
+	{
+		var i;
+		var fci = fcall_init(["self", "staticMethod1"]);
+		for i in range(1, n) {
+			fcall_call(fci, null);
+		}
+
+		fcall_done(fci);
 	}
 
 	public function readConst(var n)

@@ -38,6 +38,11 @@ typedef enum _zephir_call_type {
 	zephir_fcall_function
 } zephir_call_type;
 
+typedef struct _zephir_fci {
+	zend_fcall_info fci;
+	zend_fcall_info_cache fcc;
+} zephir_fci;
+
 /**
  * @addtogroup callfuncs Calling Functions
  * @{
@@ -416,5 +421,9 @@ ZEPHIR_ATTR_WARN_UNUSED_RESULT ZEPHIR_ATTR_NONNULL static inline int zephir_has_
 #endif
 
 void zephir_eval_php(zval *str, zval *retval_ptr, char *context);
+
+void fcall_init(zval *return_value, zval *callable);
+void fcall_call(zval *return_value, zval *fcall, zval *parameters);
+void fcall_done(zval *callable);
 
 #endif /* ZEPHIR_KERNEL_FCALL_H */

@@ -36,7 +36,7 @@ function end_test($start, $name, $overhead = null)
     $last_time = $end-$start;
     $total += $last_time;
     $num = number_format($last_time, 3);
-    $pad = str_repeat(" ", 24-strlen($name)-strlen($num));
+    $pad = str_repeat(" ", 32-strlen($name)-strlen($num));
     if (is_null($overhead)) {
         echo $name.$pad.$num."\n";
     } else {
@@ -50,10 +50,10 @@ function end_test($start, $name, $overhead = null)
 function total()
 {
     global $total;
-    $pad = str_repeat("-", 24);
+    $pad = str_repeat("-", 32);
     echo $pad."\n";
     $num = number_format($total, 3);
-    $pad = str_repeat(" ", 24-strlen("Total")-strlen($num));
+    $pad = str_repeat(" ", 32-strlen("Total")-strlen($num));
     echo "Total".$pad.$num."\n";
 }
 
@@ -110,6 +110,20 @@ $t = end_test($t, 'self::f()');
 
 $x->scallWithReturnTrue(N);
 $t = end_test($t, 'self::f() -> true');
+
+if (7 == PHP_MAJOR_VERSION) {
+    $x->slowfastcall(N);
+    $t = end_test($t, '$this->f() [slow]');
+
+    $x->fastcall(N);
+    $t = end_test($t, '$this->f() [fast]');
+
+    $x->fastscall(N);
+    $t = end_test($t, 'self::f() [fast]');
+
+    $x->fastscallWithReturnTrue(N);
+    $t = end_test($t, 'self::f() -> true [fast]');
+}
 
 $x->readConst(N);
 $t = end_test($t, '$x = Foo::TEST');

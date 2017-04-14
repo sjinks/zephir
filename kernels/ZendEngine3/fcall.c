@@ -551,3 +551,57 @@ void zephir_eval_php(zval *str, zval *retval_ptr, char *context)
 		efree_size(new_op_array, sizeof(zend_op_array));
 	}
 }
+
+void fcall_init(zval *return_value, zval *callable)
+{
+	zephir_fci *info = ecalloc(1, sizeof(zephir_fci));
+	char *error = NULL;
+
+	if (FAILURE == zend_fcall_info_init(callable, IS_CALLABLE_STRICT, &info->fci, &info->fcc, NULL, &error)) {
+		zend_throw_exception_ex(zend_exception_get_default(), 0, "Error: %s", error);
+		efree(error);
+		RETURN_NULL();
+	}
+
+	ZVAL_PTR(return_value, info);
+}
+
+void fcall_call(zval *return_value, zval *fcall, zval *parameters)
+{
+	if (parameters && Z_TYPE_P(parameters) != IS_ARRAY && Z_TYPE_P(parameters) != IS_NULL) {
+		zend_throw_exception_ex(zend_exception_get_default(), 0, "fcall_call: parameters must be array or NULL");
+		RETURN_NULL();
+	}
+
+	if (IS_PTR == Z_TYPE_P(fcall)) {
+		zephir_fci *info = Z_PTR_P(fcall);
+
+		if (info->fci.size == sizeof(info->fci)) {
+			if (parameters && IS_ARRAY == Z_TYPE_P(parameters)) {
+				zend_fcall_info_args_ex(&info->fci, info->fcc.initialized ? info->fcc.function_handler : NULL, parameters);
+			}
+
+			zend_fcall_info_call(&info->fci, &info->fcc, return_value, NULL);
+
+			if (parameters && IS_ARRAY == Z_TYPE_P(parameters)) {
+				zend_fcall_info_args_clear(&info->fci, 1);
+			}
+
+			return;
+		}
+	}
+
+	zend_throw_exception_ex(zend_exception_get_default(), 0, "Bad parameter passed to fcall_call()");
+	RETURN_NULL();
+}
+
+void fcall_done(zval *fcall)
+{
+	if (IS_PTR == Z_TYPE_P(fcall)) {
+		efree(Z_PTR_P(fcall));
+		ZVAL_NULL(fcall);
+		return;
+	}
+
+	zend_throw_exception_ex(zend_exception_get_default(), 0, "Bad parameter passed to fcall_done()");
+}
